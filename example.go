@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"text/template"
 )
 
 func sayhelloName(w http.ResponseWriter, r *http.Request) {
@@ -35,8 +36,15 @@ func login(w http.ResponseWriter, r *http.Request) {
 
 		r.ParseForm()
 		// логическая часть процесса входа
-		fmt.Println("Пользователь:", r.Form["username"])
-		fmt.Println("Пароль:", r.Form["password"])
+		//fmt.Println("Пользователь:", r.Form["username"])
+		//fmt.Println("Пароль:", r.Form["password"])
+
+		// возвращает версию с заменой потенциально опасных символов на их escape-последовательности.
+		fmt.Println("Имя пользователя:", template.HTMLEscapeString(r.Form.Get("username"))) // печатает на стороне сервера
+		fmt.Println("Пароль:", template.HTMLEscapeString(r.Form.Get("password")))
+
+		//отправляет в w версию с заменой потенциально опасных символов на их escape-последовательности.
+		template.HTMLEscape(w, []byte(r.Form.Get("username"))) // отправляет клиенту
 
 		v := url.Values{}
 
