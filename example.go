@@ -1,13 +1,15 @@
 package main
 
 import (
+	"crypto/md5"
 	"fmt"
 	"html/template"
+	"io"
 	"log"
 	"net/http"
-	"net/url"
+	"strconv"
 	"strings"
-	"text/template"
+	"time"
 )
 
 func sayhelloName(w http.ResponseWriter, r *http.Request) {
@@ -25,40 +27,28 @@ func sayhelloName(w http.ResponseWriter, r *http.Request) {
 }
 
 func login(w http.ResponseWriter, r *http.Request) {
-
-	fmt.Println("Метод:", r.Method) // получаем информацию о методе запроса
+	fmt.Println("method:", r.Method) // получаем метод запроса
 	if r.Method == "GET" {
+		curtime := time.Now().Unix()
+		h := md5.New()
+		io.WriteString(h, strconv.FormatInt(curtime, 12))
+		token := fmt.Sprintf("%x", h.Sum(nil))
+
 		t, _ := template.ParseFiles("login.html")
-		t.Execute(w, nil)
+		t.Execute(w, token)
 	} else {
-
-		fmt.Println(r.FormValue("username")) // Go вызовет r.ParseForm автоматически, вернет первое из значений
-
+		// запрос данных о входе
 		r.ParseForm()
-		// логическая часть процесса входа
-		//fmt.Println("Пользователь:", r.Form["username"])
-		//fmt.Println("Пароль:", r.Form["password"])
-
-		// возвращает версию с заменой потенциально опасных символов на их escape-последовательности.
-		fmt.Println("Имя пользователя:", template.HTMLEscapeString(r.Form.Get("username"))) // печатает на стороне сервера
-		fmt.Println("Пароль:", template.HTMLEscapeString(r.Form.Get("password")))
-
-		//отправляет в w версию с заменой потенциально опасных символов на их escape-последовательности.
-		template.HTMLEscape(w, []byte(r.Form.Get("username"))) // отправляет клиенту
-
-		v := url.Values{}
-
-		v.Set("name", "Ava")
-		v.Add("name", "Pavel")
-		v.Add("friend", "Jess")
-		v.Add("friend", "Sarah")
-		v.Add("friend", "Zoe")
-		// v.Encode() == "name=Ava&friend=Jess&friend=Sarah&friend=Zoe"
-		fmt.Println(v.Get("name"))   // безопаснее использовать Get т.к. возращает пустое значение если пусто
-		fmt.Println(v.Get("friend")) // только одно первое значение
-		fmt.Println(v["friend"])     // карта значений
-		fmt.Println(v["name"])       // карта значений
-
+		token := r.Form.Get("token")
+		if token != "" {
+			// проверяем валидность токена
+		} else {
+			// если нет токена, возвращаем ошибку
+		}
+		fmt.Println("username length:", len(r.Form["username"][0]))
+		fmt.Println("username:", template.HTMLEscapeString(r.Form.Get("username"))) // печатаем на стороне сервера
+		fmt.Println("password:", template.HTMLEscapeString(r.Form.Get("password")))
+		template.HTMLEscape(w, []byte(r.Form.Get("username"))) // отвечаем клиенту
 	}
 }
 

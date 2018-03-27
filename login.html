@@ -6,10 +6,14 @@
 </head>
 <body>
 
-<form action="/login?username=pavel" method="post">
-    Имя пользователя:<input type="text" name="username">
+<form action="/login" method="post">
+    <input type="checkbox" name="interest" value="football">Футбол
+    <input type="checkbox" name="interest" value="basketball">Баскетбол
+    <input type="checkbox" name="interest" value="tennis">Теннис
+    Имя:<input type="text" name="username">
     Пароль:<input type="password" name="password">
-    <input type="submit" value="Войти">
+    <input type="hidden" name="token" value="{{.}}">
+    <input type="submit" value="Login">
 </form>
 
 </body>
