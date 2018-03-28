@@ -15,6 +15,7 @@ import (
 func sayhelloName(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm() // Анализирует переданные параметры url, затем анализирует пакет ответа для тела POST (тела запроса)
 	// внимание: без вызова метода ParseForm последующие данные не будут получены
+	fmt.Println("sayhelloName")
 	fmt.Println(r.Form) // печатает информацию на сервере
 	fmt.Println("Путь: ", r.URL.Path)
 	fmt.Println("Схема: ", r.URL.Scheme)
@@ -28,6 +29,7 @@ func sayhelloName(w http.ResponseWriter, r *http.Request) {
 
 func login(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("method:", r.Method) // получаем метод запроса
+	fmt.Println("login")
 	if r.Method == "GET" {
 		curtime := time.Now().Unix()
 		h := md5.New()
@@ -45,10 +47,10 @@ func login(w http.ResponseWriter, r *http.Request) {
 		} else {
 			// если нет токена, возвращаем ошибку
 		}
-		fmt.Println("username length:", len(r.Form["username"][0]))
-		fmt.Println("username:", template.HTMLEscapeString(r.Form.Get("username"))) // печатаем на стороне сервера
+		fmt.Println("email length:", len(r.Form["email"][0]))
+		fmt.Println("email:", template.HTMLEscapeString(r.Form.Get("email"))) // печатаем на стороне сервера
 		fmt.Println("password:", template.HTMLEscapeString(r.Form.Get("password")))
-		template.HTMLEscape(w, []byte(r.Form.Get("username"))) // отвечаем клиенту
+		template.HTMLEscape(w, []byte(r.Form.Get("email"))) // отвечаем клиенту
 	}
 }
 
